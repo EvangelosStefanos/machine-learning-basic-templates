@@ -1,5 +1,6 @@
 from sklearn import metrics, pipeline, linear_model, model_selection, tree
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # dataframe.summary()
 # dataframe.describe()
@@ -54,8 +55,29 @@ def plot_results(results):
   results[lmean].plot.bar(yerr=stds, capsize=4, rot=0)
   return
 
-def plot_diff(results):
-  
+def eplot(x, y, yerr, weighted, title, xlabel, ylabel):
+  fig, ax = plt.subplots(figsize=(12.8,7.2), dpi=100)
+  ax.errorbar(x, y, yerr=yerr, fmt="o", label="Test Score")
+  ax.scatter(x, weighted, marker="x", color="red", label="Weighted Score")
+
+  ax.set_xlabel(xlabel)
+  ax.set_ylabel(ylabel)
+  ax.legend()
+  # Display 'ticks' in x-axis and y-axis
+  plt.xticks()
+  plt.yticks()
+  plt.title(title)
+  # Show plot
+  plt.show()
   return
 
+def create_cross_scores(results):
+  cross = pd.DataFrame(results[["rank_test_score"]])
+  cross.loc[:, "mean_total_score"] = (results["mean_train_score"] + results["mean_test_score"]) / 2
+  cross.loc[:, "std_total_score"] = (results["mean_train_score"] - results["mean_test_score"]) / 2
+  cross.loc[:, "weighted_total_score"] = cross["mean_total_score"] * 0.5 + (1 - cross["std_total_score"]) * 0.5
+  return cross
+
+def make_weighted_score(results, postfix):
+  return 0.5 * results["mean_" + postfix] + 0.5 * (1 - results["std_" + postfix])
 
