@@ -1,0 +1,10 @@
+# Docker Compose version v2.29.7
+services:
+  machine-learning-templates:
+    build: .
+    image: machine-learning-templates
+    ports:
+      - 8888:8888
+    volumes:
+      - ./app:/app
+
